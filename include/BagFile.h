@@ -16,19 +16,13 @@ public:
                    std::string matrix = "");
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr getPointCloud(int frame = 10,
-                                                       double threshold = 1.7,
+                                                       double threshold = 1.2,
                                                        bool filter = true);
   std::string getSerial() const;
-
-  int getCameraPos() const;
-  void setCameraPos(int cameraPos);
 
 private:
   std::string _serial;
   std::string _filename;
-  std::string _matrix;
-
-  int _cameraPos;
 
   std::vector<rs2::depth_frame> _depths;
   std::vector<rs2::video_frame> _colors;

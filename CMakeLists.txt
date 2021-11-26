@@ -30,7 +30,7 @@ set_target_properties(cudaHelper PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 set_target_properties(cudaHelper PROPERTIES CUDA_ARCHITECTURES 35 50 61)
 
-add_executable(PCloudExtract src/main.cpp src/BagFile.cpp include/BagFile.h src/helper.cpp include/helper.h include/pclhelper.h)
+add_executable(PCloudExtract ${project_src} ${project_headers})
 target_link_libraries(PCloudExtract PRIVATE
         ${OpenCV_LIBS}
         ${PCL_LIBRARIES}
