@@ -14,12 +14,12 @@ Helper::RS2toPCLCuda(rs2::frame &depth, rs2::frame &RGB, cv::Mat mask) {
   pcl::ScopeTime t("Processing Cloud Cuda");
 #endif
 
-  std::cout << "Start of RS2TOPCL";
+  //  std::cout << "Start of RS2TOPCL";
 
   rs2_intrinsics intrinsics =
       RGB.get_profile().as<rs2::video_stream_profile>().get_intrinsics();
 
-  std::cout << "After CV MAT of RS2TOPCL";
+  //  std::cout << "After CV MAT of RS2TOPCL";
   auto color = cv::Mat(RGB.as<rs2::video_frame>().get_height(),
                        RGB.as<rs2::video_frame>().get_width(), CV_8UC3,
                        const_cast<void *>(RGB.get_data()), cv::Mat::AUTO_STEP);
@@ -75,23 +75,22 @@ Helper::RS2toPCLCuda(rs2::frame &depth, rs2::frame &RGB, cv::Mat mask) {
     float *z = (float *)malloc(bytes);
     float *x = (float *)malloc(bytes);
     float *y = (float *)malloc(bytes);
-    pcl::PointXYZRGB *points = cloud->points.data();
+    //    pcl::PointXYZRGB *points = cloud->points.data();
 
     // toXYZRGB(fx, fy, cx, cy, w, h, depth_image.ptr<float>(), rgbM, points);
 
     for (int y = 0; y < depth_image.rows; y++) {
       for (int x = 0; x < depth_image.cols; x++) {
 
-        cv::Point2f point(x, y);
+        //        cv::Point2f point(x, y);
         if (!mask.at<uint8_t>(y, x))
           continue;
         int in = (y * depth_image.cols) + x;
 
         float d = image[in];
-        // qDebug() << "Depth 1: " << d;
+
         Z = (f_scale * d);
-        // qDebug() << "Depth 2: " << Z;
-        // if (Z > 0.400 && Z < 1.5) {
+
         pcl::PointXYZRGB p;
 
         p.z = Z;
@@ -102,6 +101,9 @@ Helper::RS2toPCLCuda(rs2::frame &depth, rs2::frame &RGB, cv::Mat mask) {
         p.r = rgbM[index];     // Reference tuple<2>
         p.g = rgbM[index + 1]; // Reference tuple<1>
         p.b = rgbM[index + 2]; // Reference tuple<0>
+        p.x = floor(p.x * 144.444);
+        p.y = floor(p.y * 144.444);
+        p.z = floor(p.z * 144.444);
 
         cloud->points.emplace_back(p);
         // }

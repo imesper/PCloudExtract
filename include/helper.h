@@ -42,49 +42,60 @@
 
 //#include "unet.h"
 
-class Helper
-{
+class Helper {
 
 public:
-    explicit Helper();
-    ~Helper();
+  explicit Helper();
+  ~Helper();
 
-    static pcl::PointCloud<pcl::PointXYZRGB>::Ptr RS2toPCLCuda(rs2::frame& depth,
-                                                               rs2::frame& RGB,
-                                                               cv::Mat mask);
-//    static cv::Affine3d readTransformation(std::string file);
-//    static void pcs_alignmentFPFH(
-//            pcl::PointCloud<pcl::PointXYZRGB>::Ptr target,
-//            pcl::PointCloud<pcl::FPFHSignature33>::Ptr target_features,
-//            pcl::PointCloud<pcl::PointXYZRGB>::Ptr source,
-//            pcl::PointCloud<pcl::FPFHSignature33>::Ptr source_features,
-//            const int samples,
-//            const int correspRandomness,
-//            const double similarity,
-//            const double maxCorrespDist,
-//            const double inlierFraction,
-//            Eigen::Matrix4d* transformation);
-//    static void computeFPFHFeatures(
-//            pcl::PointCloud<pcl::PointXYZRGB>::Ptr downsample,
-//            pcl::PointCloud<pcl::Normal>::Ptr normals,
-//            pcl::PointCloud<pcl::FPFHSignature33>::Ptr descriptors,
-//            double feature_radius);
-//    static void computeSurfaceNormals(
-//            pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
-//            pcl::PointCloud<pcl::Normal>::Ptr normals,
-//            double normal_radius);
+  static pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+  RS2toPCLCuda(rs2::frame &depth, rs2::frame &RGB, cv::Mat mask);
+  template <typename T>
+  static void saveFileTXT(const std::string &filename, const T &cloud) {
 
-    //  static cv::Mat ToCvImage(at::Tensor tensor);
+    std::fstream fs;
 
-    //  static torch::Tensor ToTensor(cv::Mat img,
-    //                                bool show_output = false,
-    //                                bool unsqueeze = false,
-    //                                int unsqueeze_dim = 0);
+    fs.open(filename, std::fstream::out);
+    for (size_t i = 0; i < cloud->points.size(); ++i) {
+      fs << cloud->points[i].x << ";" << cloud->points[i].y << ";"
+         << cloud->points[i].z << "\n";
+    }
+    fs.close();
+  };
 
-    //  static torch::nn::ModuleList get_encoder_blocks(
-    //    vision::models::VGG16BN model);
-    //  static cv::Mat processImageUNet(cv::Mat image);
-    //  static UNet startUnet();
+  //    static cv::Affine3d readTransformation(std::string file);
+  //    static void pcs_alignmentFPFH(
+  //            pcl::PointCloud<pcl::PointXYZRGB>::Ptr target,
+  //            pcl::PointCloud<pcl::FPFHSignature33>::Ptr target_features,
+  //            pcl::PointCloud<pcl::PointXYZRGB>::Ptr source,
+  //            pcl::PointCloud<pcl::FPFHSignature33>::Ptr source_features,
+  //            const int samples,
+  //            const int correspRandomness,
+  //            const double similarity,
+  //            const double maxCorrespDist,
+  //            const double inlierFraction,
+  //            Eigen::Matrix4d* transformation);
+  //    static void computeFPFHFeatures(
+  //            pcl::PointCloud<pcl::PointXYZRGB>::Ptr downsample,
+  //            pcl::PointCloud<pcl::Normal>::Ptr normals,
+  //            pcl::PointCloud<pcl::FPFHSignature33>::Ptr descriptors,
+  //            double feature_radius);
+  //    static void computeSurfaceNormals(
+  //            pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
+  //            pcl::PointCloud<pcl::Normal>::Ptr normals,
+  //            double normal_radius);
+
+  //  static cv::Mat ToCvImage(at::Tensor tensor);
+
+  //  static torch::Tensor ToTensor(cv::Mat img,
+  //                                bool show_output = false,
+  //                                bool unsqueeze = false,
+  //                                int unsqueeze_dim = 0);
+
+  //  static torch::nn::ModuleList get_encoder_blocks(
+  //    vision::models::VGG16BN model);
+  //  static cv::Mat processImageUNet(cv::Mat image);
+  //  static UNet startUnet();
 };
 
-#endif //PCLOUDEXTRACT_HELPER_H
+#endif // PCLOUDEXTRACT_HELPER_H

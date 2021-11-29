@@ -1,5 +1,6 @@
 #include "BagFile.h"
 #include "argparse.h"
+
 #include <filesystem>
 #include <iostream>
 #include <pybind11/embed.h>
@@ -12,15 +13,27 @@ int main(int argc, char *argv[]) {
   argparse::ArgumentParser program("PCloudExtract", "0.0.1");
 
   program.add_argument("-i", "--input-file").help("specify the input file.");
-
-  program.add_argument("-f", "--input-folder")
+  program.add_argument("-I", "--input-folder")
       .help("specify the input folder.");
   program.add_argument("-o", "--output-file")
       .help("specify the output folder.")
       .default_value(std::string("output.csv"));
-  program.add_argument("-F", "--output-folder")
+  program.add_argument("-O", "--output-folder")
       .help("specify the output file.")
-      .default_value(std::string("output"));
+      .default_value(std::string("../output"));
+  program.add_argument("-f", "--filter")
+      .default_value(false)
+      .implicit_value(true);
+  program.add_argument("-x", "--x-filter")
+      .help("specify x.")
+      .nargs(2)
+      .default_value(std::vector<float>{-0.5, 1.0})
+      .scan<'g', float>();
+  program.add_argument("-z", "--z-filter")
+      .help("specify z.")
+      .nargs(2)
+      .default_value(std::vector<float>{0.5, 1.0})
+      .scan<'g', float>();
 
   try {
     program.parse_args(argc, argv);
@@ -29,9 +42,15 @@ int main(int argc, char *argv[]) {
     std::cerr << program;
     std::exit(1);
   }
-  if (program.is_used("--input-file") || program.is_used("--input-folder")) {
+  if (!program.is_used("--input-file") && !program.is_used("--input-folder")) {
     std::cout << program;
+    exit(-1);
   }
+  auto filter = program.get<bool>("--filter");
+  std::cout << filter << std::endl;
+  auto filterX = program.get<std::vector<float>>("--x-filter");
+  auto filterZ = program.get<std::vector<float>>("--z-filter");
+
   std::string inputFile, inputFolder, outputFile, outputFolder;
   if (auto input = program.present<std::string>("--input-file"))
     inputFile = *input;
@@ -52,18 +71,31 @@ int main(int argc, char *argv[]) {
         files.emplace_back(file.path());
     }
   } else if (!inputFile.empty()) {
+    std::cout << "Input File: " << inputFile << std::endl;
     files.emplace_back(inputFile);
   }
-  if (processFolder) {
-    for (auto &file : files) {
-      BagFile bag(file);
-      auto cloud = bag.getPointCloud(10);
-      pcl::visualization::PCLVisualizer viewer("PCL Viewer");
-      viewer.setBackgroundColor(0.0, 0.0, 0.0);
-      viewer.addPointCloud(cloud, "cloud");
-      viewer.spin();
-    }
+  for (auto &file : files) {
+    std::cout << file << std::endl;
+    std::string filename =
+        outputFolder + file.substr(file.find_last_of("/"), file.find(".bag")) +
+        ".txt";
+    std::cout << filename << std::endl;
+    bool flipped = file.find("YES") != -1 ? true : false;
+    BagFile bag(file);
+    auto cloud = bag.getPointCloud(10, flipped, filter, filterX, filterZ);
+    ////    pcl::PointXYZRGB point1, point2;
+    ////    pcl::getMinMax3D<pcl::PointXYZRGB>(*cloud, point1, point2);
+    ////    pcl::visualization::PCLVisualizer viewer("PCL Viewer");
+    ////    viewer.addCoordinateSystem(0.2);
+    ////    viewer.setBackgroundColor(0.0, 0.0, 0.0);
+    ////    viewer.addPointCloud(cloud, "cloud");
+    ////    viewer.addSphere(point1, 0.02, "1");
+    ////    viewer.addSphere(point2, 0.02, "2");
+    ////    viewer.spinOnce();
+    ////    viewer.close();
+    Helper::saveFileTXT<pcl::PointCloud<pcl::PointXYZRGB>::Ptr>(filename,
+                                                                cloud);
   }
-
+  std::cout << files.size() << std::endl;
   return 0;
 }

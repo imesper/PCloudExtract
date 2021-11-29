@@ -5,19 +5,19 @@
 #ifndef PCLOUDEXTRACT_BAGFILE_H
 #define PCLOUDEXTRACT_BAGFILE_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "helper.h"
 
 class BagFile {
 public:
-  explicit BagFile(std::string filename,
-                   std::string matrix = "");
+  explicit BagFile(std::string filename, std::string matrix = "");
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr getPointCloud(int frame = 10,
-                                                       double threshold = 1.2,
-                                                       bool filter = true);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+  getPointCloud(int frame = 10, bool flipped = false, bool filter = true,
+                const std::vector<float> &filterX = {-0.5, 1.0},
+                const std::vector<float> &filterZ = {0.5, 1.0});
   std::string getSerial() const;
 
 private:
@@ -27,7 +27,6 @@ private:
   std::vector<rs2::depth_frame> _depths;
   std::vector<rs2::video_frame> _colors;
   rs2_intrinsics _intrinsics;
-
 };
 
-#endif //PCLOUDEXTRACT_BAGFILE_H
+#endif // PCLOUDEXTRACT_BAGFILE_H
