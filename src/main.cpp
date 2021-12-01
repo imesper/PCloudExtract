@@ -83,16 +83,16 @@ int main(int argc, char *argv[]) {
     bool flipped = file.find("YES") != -1 ? true : false;
     BagFile bag(file);
     auto cloud = bag.getPointCloud(10, flipped, filter, filterX, filterZ);
-    ////    pcl::PointXYZRGB point1, point2;
-    ////    pcl::getMinMax3D<pcl::PointXYZRGB>(*cloud, point1, point2);
-    ////    pcl::visualization::PCLVisualizer viewer("PCL Viewer");
-    ////    viewer.addCoordinateSystem(0.2);
-    ////    viewer.setBackgroundColor(0.0, 0.0, 0.0);
-    ////    viewer.addPointCloud(cloud, "cloud");
-    ////    viewer.addSphere(point1, 0.02, "1");
-    ////    viewer.addSphere(point2, 0.02, "2");
-    ////    viewer.spinOnce();
-    ////    viewer.close();
+    pcl::PointXYZRGB point1, point2;
+    pcl::getMinMax3D<pcl::PointXYZRGB>(*cloud, point1, point2);
+    pcl::visualization::PCLVisualizer viewer("PCL Viewer");
+    viewer.addCoordinateSystem(0.2);
+    viewer.setBackgroundColor(0.0, 0.0, 0.0);
+    viewer.addPointCloud(cloud, "cloud");
+    viewer.addSphere(point1, 0.02, "1");
+    viewer.addSphere(point2, 0.02, "2");
+    viewer.spin();
+    viewer.close();
     Helper::saveFileTXT<pcl::PointCloud<pcl::PointXYZRGB>::Ptr>(filename,
                                                                 cloud);
   }

@@ -12,8 +12,21 @@
 
 class BagFile {
 public:
+  /**
+   * Instantiate BagFile Class with the file path
+   * @param filename
+   * @param matrix
+   */
   explicit BagFile(std::string filename, std::string matrix = "");
-
+  /**
+   * Get the point cloud
+   * @param frame
+   * @param flipped
+   * @param filter
+   * @param filterX
+   * @param filterZ
+   * @return
+   */
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr
   getPointCloud(int frame = 10, bool flipped = false, bool filter = true,
                 const std::vector<float> &filterX = {-0.5, 1.0},
